@@ -13,10 +13,14 @@ description: "This is an R companion for the Applied Linear Statistical Models (
 ---
 
 `r if (knitr:::is_html_output()) '
-# Introduction {-}
+# Welcome {-}
 '`
 
-This is an R companion for the Applied Linear Statistical Models [@kutner2005applied].
+This is an R companion for the Applied Linear Statistical Models [@kutner2005applied]. The purpose of the book is to reproduce all the examples in the book using R and to provide solutions to all exercises using R.
+
+```{r, echo=FALSE, fig.align='center',fig.height=8,fig.width=6}
+knitr::include_graphics("/Users/cengiz/Desktop/Github/rcompanionALSM/supp/cover.jpg")
+```
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages

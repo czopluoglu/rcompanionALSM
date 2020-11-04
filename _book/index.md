@@ -13,9 +13,11 @@ description: "This is an R companion for the Applied Linear Statistical Models (
 ---
 
 
-# Introduction {-}
+# Welcome {-}
 
 
-This is an R companion for the Applied Linear Statistical Models [@kutner2005applied].
+This is an R companion for the Applied Linear Statistical Models [@kutner2005applied]. The purpose of the book is to reproduce all the examples in the book using R and to provide solutions to all exercises using R.
+
+<img src="/Users/cengiz/Desktop/Github/rcompanionALSM/supp/cover.jpg" width="162" style="display: block; margin: auto;" />
 
 
