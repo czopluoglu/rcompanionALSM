@@ -1,24 +1,418 @@
-
-`r if (knitr:::is_html_output()) '
-# Chapter 1 {-}
-'`
-
-You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(intro). If you do not manually label them, there will be automatic labels anyway, e.g., Chapter \@ref(methods).
-
-Figures and tables with captions will be placed in `figure` and `table` environments, respectively.
-
-```{r nice-fig, fig.cap='Here is a nice figure!', out.width='80%', fig.asp=.75, fig.align='center'}
-par(mar = c(4, 4, .1, .1))
-plot(pressure, type = 'b', pch = 19)
+```{r setup, include=FALSE}
+require(here)
+options(scipen=99)
+options(digits = 4)
 ```
 
-Reference a figure by its code chunk label with the `fig:` prefix, e.g., see Figure \@ref(fig:nice-fig). Similarly, you can reference tables generated from `knitr::kable()`, e.g., see Table \@ref(tab:nice-tab).
 
-```{r nice-tab, tidy=FALSE}
-knitr::kable(
-  head(iris, 20), caption = 'Here is a nice table!',
-  booktabs = TRUE
-)
+# Linear Regression with One Predictor Variable {#ch1}
+
+
+## Relations between Variables
+
+### Example 1
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE}
+
+require(here)
+
+fig1.2 <- read.csv(here('/data/fig1.2.csv/'),header=FALSE)
+
+require(ggplot2)
+
+ggplot(fig1.2,aes(x=V1,y=V2))+
+  geom_point(size=4,col='gray42')+
+  geom_smooth(method=lm,se=FALSE,lty=2,col='black')+
+  xlim(55,100)+
+  ylim(55,100)+
+  xlab('Midyear Evaluation')+
+  ylab('Year-End Evaluation')+
+  theme_bw()
 ```
 
-You can write citations, too. For example, we are using the **bookdown** package [@R-bookdown] in this sample book, which was built on top of R Markdown and **knitr** [@xie2015].
+
+### Example 2
+
+```{r, fig.align='center', fig.height=4,fig.width=7,message=FALSE,warning=FALSE}
+
+fig1.3 <- read.csv(here('/data/fig1.3.csv/'),header=FALSE)
+
+ggplot(fig1.3,aes(x=V1,y=V2))+
+  geom_point(size=4,col='gray42')+
+  geom_smooth(method=lm,formula = y ~ x + I(x^2), se=FALSE,lty=2,col='black')+
+  xlim(7.5,25)+
+  ylim(1,30)+
+  xlab('Age')+
+  ylab('Stereoid Level')+
+  theme_bw()
+```
+
+## Regression Model an Their Uses
+
+## Simple Linear Regression Model with Distributions of Error Terms Unspecified
+
+### Example (page 10)
+
+$$Y_i = 9.5 + 2.1X_i + \epsilon_i$$
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE}
+
+b0 = 9.5
+b1 = 2.1
+        
+x = 0:70
+        
+mean = b0 + b1*x
+    
+err.sd = 5
+        
+  plot(x,mean,type="l",
+       ylim=c(40,120),
+       xlim=c(10,50),
+       cex=1,
+       pch=19,
+       xlab="Number of Bids Prepared",
+       ylab="Hours",
+       xaxt='n')
+        
+  axis(side=1,at=c(0,25,45))
+  abline(b0,b1)
+        
+  dens = dnorm(seq(-3,3,.01),0,1)
+
+  for(i in c(26,46)){
+            
+    x. = x[i] - 5*dens
+    y. = mean[i]+seq(-3,3,.01)*err.sd
+    points(x.,y.,type="l",lty=2)
+    abline(v=x[i],lty=2,col="gray")
+  }
+```
+
+## Data for Regression Analysis
+
+## Overview of Steps in Regression Analysis
+
+## Estimation of Regression Function
+
+### Example (page 15)
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+Age      <- c(20,55,30)
+Attempts <- c(5, 12, 10)
+
+fig1.9 <- data.frame(Age=Age,Attempts=Attempts)
+
+ggplot(data= fig1.9, aes(x=Age,y=Attempts))+
+	geom_point(size=4,color='gray42')+
+	xlim(c(10,60))+
+	ylim(c(0,15))+
+  theme_bw()+
+	geom_hline(yintercept = 9)+
+	geom_segment(x = fig1.9[1,1], y = fig1.9[1,2], xend = fig1.9[1,1], yend = 9)+
+  geom_segment(x = fig1.9[2,1], y = fig1.9[2,2], xend = fig1.9[2,1], yend = 9)+
+  geom_segment(x = fig1.9[3,1], y = fig1.9[3,2], xend = fig1.9[3,1], yend = 9)+
+	xlab('Age')+
+	ylab('Attempts')
+
+# Sum of Squared Deviations 
+
+sum((Attempts - 9)^2)
+```
+
+
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+mod <- lm(Attempts ~ 1 + Age,d=fig1.9)
+
+ggplot(data= fig1.9, aes(x=Age,y=Attempts))+
+	geom_point(size=4,color='gray42')+
+  geom_abline(intercept = coef(mod)[1],slope=coef(mod)[2])+
+	xlim(c(10,60))+
+	ylim(c(0,15))+
+  theme_bw()+
+	geom_segment(x = fig1.9[1,1], y = fig1.9[1,2], xend = fig1.9[1,1], 
+	             yend = predict(mod, newdata = data.frame(Age=c(fig1.9[1,1]))))+
+	geom_segment(x = fig1.9[2,1], y = fig1.9[2,2], xend = fig1.9[2,1], 
+	             yend = predict(mod, newdata = data.frame(Age=c(fig1.9[2,1]))))+
+	geom_segment(x = fig1.9[3,1], y = fig1.9[3,2], xend = fig1.9[3,1], 
+	             yend = predict(mod, newdata = data.frame(Age=c(fig1.9[3,1]))))+
+	xlab('Age')+
+	ylab('Attempts')
+
+# Model predictions
+
+predict(mod)
+
+# Model Residuals
+
+resid(mod)
+
+# Sum of Squared Deviations 
+
+sum((Attempts - predict(mod))^2)
+
+sum(resid(mod)^2)
+
+```
+
+### Example (page 19)
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+table1.1 <- read.table(here('/data/CH01TA01.txt/'),header=FALSE)
+
+colnames(table1.1) <- c('lot.size','work.hours')
+
+table1.1
+```
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+ggplot(table1.1,aes(x=lot.size,y=work.hours))+
+  geom_point(size=3,col='gray42')+
+  geom_smooth(method=lm,se=FALSE,lty=2,lwd=0.5,col='black')+
+  xlim(0,150)+
+  ylim(0,600)+
+  xlab('Lot Size')+
+  ylab('Hours')+
+  theme_bw()
+```
+
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+require(lm.beta)
+require(car)
+
+mod <- lm(work.hours ~ 1 + lot.size,d=table1.1)
+
+Anova(mod,type=3)
+
+summary(mod)
+
+coef(mod)
+
+```
+
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+table1.1$x_xbar <- table1.1$lot.size - mean(table1.1$lot.size)
+table1.1$y_ybar <- table1.1$work.hours - mean(table1.1$work.hours)
+table1.1$x_xbar_y_ybar <- table1.1$x_xbar*table1.1$y_ybar
+table1.1$x_xbar.sq <- table1.1$x_xbar^2
+table1.1$y_ybar.sq <- table1.1$y_ybar^2
+
+table1.1
+```
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+b1 = sum(table1.1$x_xbar_y_ybar)/sum(table1.1$x_xbar.sq)
+b1
+
+b0 = mean(table1.1$work.hours) - b1*mean(table1.1$lot.size)
+b0
+```
+
+
+### Example (page 21)
+
+$$ \hat{Y} = 62.37 + 35702*X$$
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+
+predict(mod, newdata = data.frame(lot.size=65))
+
+```
+
+### Table 1.2 (page 22)
+
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+
+table1.1 <- read.table(here('/data/CH01TA01.txt/'),header=FALSE)
+colnames(table1.1) <- c('lot.size','work.hours')
+
+mod <- lm(work.hours ~ 1 + lot.size,d=table1.1)
+
+table1.1$predicted <- predict(mod)
+table1.1$residuals <- resid(mod)
+table1.1$residuals.squared <- resid(mod)^2
+
+table1.1
+
+```
+
+
+### Alternative Model with Mean Centering (page 22)
+
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+
+table1.1 <- read.table(here('/data/CH01TA01.txt/'),header=FALSE)
+colnames(table1.1) <- c('lot.size','work.hours')
+
+table1.1$lot.size_centered <- table1.1$lot.size - mean(table1.1$lot.size)
+
+mod <- lm(work.hours ~ 1 + lot.size_centered,d=table1.1)
+
+Anova(mod,type=3)
+
+summary(mod)
+
+coef(mod)
+```
+
+## Estimation of Error Terms Variance
+
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment=''}
+
+table1.1 <- read.table(here('/data/CH01TA01.txt/'),header=FALSE)
+colnames(table1.1) <- c('lot.size','work.hours')
+
+mod <- lm(work.hours ~ 1 + lot.size,d=table1.1)
+
+table1.1$predicted <- predict(mod)
+table1.1$residuals <- resid(mod)
+table1.1$residuals.squared <- resid(mod)^2
+
+sse = sum(table1.1$residuals.squared)
+sse
+
+mse = sum(table1.1$residuals.squared)/(nrow(table1.1)-2)
+mse 
+
+sqrt(mse)
+
+
+```
+
+## Normal Error Regression Model
+
+### Least Square Estimation
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment='',eval=FALSE}
+
+table1.1 <- read.table(here('/data/CH01TA01.txt/'),header=FALSE)
+colnames(table1.1) <- c('lot.size','work.hours')
+
+beta0 <- seq(50,75,.1)
+beta1 <- seq(1,6,.01)
+
+ols <- expand.grid(beta0,beta1)
+colnames(ols) <- c('beta0','beta1')
+ols$ssr <- NA
+
+for(i in 1:nrow(ols)){
+	p = ols[i,1] + ols[i,2]*table1.1$lot.size
+	ols[i,3] = sum((table1.1$work.hours - p)^2)
+}
+
+require(lattice)
+
+wireframe(ssr ~ beta0 * beta1,
+          data = ols,
+          shade=TRUE,
+          screen = list(z = 40, x = -60, y=0),
+	    scales = list(arrows=FALSE),
+	    xlab = expression(beta[0]), 
+	    ylab = expression(beta[1]), 
+	    zlab = "SSR")
+
+ols[which.min(ols$ssr),]
+``` 
+
+```{r, fig.align='center', fig.height=8,fig.width=8,message=FALSE,warning=FALSE,comment='',eval=TRUE, echo=FALSE}
+ols <- read.csv(here('/data/ols.csv/'),header=TRUE)
+ols[which.min(ols$ssr),]
+``` 
+
+```{r, fig.align='center', fig.height=8,fig.width=8,message=FALSE,warning=FALSE,comment='',eval=TRUE, echo=FALSE}
+require(lattice)
+
+wireframe(ssr ~ beta0 * beta1,
+          data = ols,
+          shade=TRUE,
+          screen = list(z = 40, x = -60, y=0),
+	    scales = list(arrows=FALSE),
+	    xlab = expression(beta[0]), 
+	    ylab = expression(beta[1]), 
+	    zlab = "SSR")
+
+``` 
+
+### Maximum Likelihood Estimation
+
+```{r, fig.align='center', fig.height=5,fig.width=7,message=FALSE,warning=FALSE,comment='',eval=FALSE}
+
+table1.1 <- read.table(here('/data/CH01TA01.txt/'),header=FALSE)
+colnames(table1.1) <- c('lot.size','work.hours')
+
+beta0 <- seq(50,75,.1)
+beta1 <- seq(1,6,.01)
+
+mle <- expand.grid(beta0,beta1)
+colnames(mle) <- c('beta0','beta1')
+mle$loglikelihood <- NA
+
+mse = 2383 # assumed to be known
+
+for(i in 1:nrow(mle)){
+	p = ols[i,1] + ols[i,2]*table1.1$lot.size
+	mle[i,3] = 	sum(log(dnorm((table1.1$work.hours - p)/sqrt(mse))))
+}
+
+wireframe(loglikelihood ~ beta0 * beta1,
+          data = mle,
+          shade=TRUE,
+          screen = list(z = 40, x = -60, y=0),
+          scales = list(arrows=FALSE),
+          xlab = expression(beta[0]), 
+          ylab = expression(beta[1]), 
+          zlab = "Loglikelihood")
+
+mle[which.max(mle$loglikelihood),]
+
+``` 
+
+```{r, fig.align='center', fig.height=8,fig.width=8,message=FALSE,warning=FALSE,comment='',eval=TRUE, echo=FALSE}
+mle <- read.csv(here('/data/mle.csv/'),header=TRUE)
+mle[which.max(mle$loglikelihood),]
+``` 
+
+```{r, fig.align='center', fig.height=8,fig.width=8,message=FALSE,warning=FALSE,comment='',eval=TRUE, echo=FALSE}
+require(lattice)
+
+wireframe(loglikelihood ~ beta0 * beta1,
+          data = mle,
+          shade=TRUE,
+          screen = list(z = 40, x = -60, y=0),
+          scales = list(arrows=FALSE),
+          xlab = expression(beta[0]), 
+          ylab = expression(beta[1]), 
+          zlab = "Loglikelihood")
+``` 
+
+
+
+## Problems
+
+
+
+
+
+
+
+
+
+
+
+
+
+

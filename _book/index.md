@@ -1,7 +1,7 @@
 --- 
 title: "An R Companion for the Applied Linear Statistical Models"
 author: "Cengiz Zopluoglu"
-date: "2020-11-03"
+date: "2020-11-14"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
