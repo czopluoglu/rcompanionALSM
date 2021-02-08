@@ -511,7 +511,7 @@ d. random assignment to different levels of physical activity
 ### 1.14
 
 
-```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE}
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
 
 set.seed(1234)
 
@@ -526,7 +526,7 @@ a
 
 
 
-```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,eval=FALSE,echo=TRUE}
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,eval=FALSE,echo=TRUE,comment=""}
 
 # Simulation code to demonstrate if the above procedure works as expected
 
@@ -553,6 +553,301 @@ table(assg)
 
 
 ### 1.15
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+set.seed(1234)
+
+a <- data.frame(cbind(1:20,runif(20,0,1)))
+
+a <- a[order(a[,2]),]
+
+a$gr <- c(1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5)
+
+a
+```
+
+### 1.16
+
+No. Least squres method doesn't care about the distribution of Y. It is still BLUE. No assumption is needed until one decides to make an inference
+
+### 1.17
+
+yes. why not?
+
+### 1.18
+
+It is not necessary that the errors will sum to zero at the population. Even the average error in population is different than zero, the residuals from a regression at the sample level can be equal to zero. See below.
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+set.seed(1234)
+
+# Population
+
+  b0 <- 200
+  b1 <- 5
+  sigma <- 5
+
+  x   <- rnorm(10000,0,1)
+  err <- rnorm(10000,50,5)
+  y   <- b0+b1+err
+
+# A random sample with size 200
+  
+s <- sample(1:10000,200)
+
+s.x <- x[s]
+s.y <- y[s]
+
+fit <- lm(s.y ~ s.x)
+
+summary(fit)
+
+mean(resid(fit))
+```
+
+### 1.19
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+require(here)
+
+gpa <- read.table(here('data/CH01PR19.txt'),
+                  header=FALSE,
+                  col.names = c('gpa','act'))
+
+str(gpa)
+
+head(gpa)
+
+fit <- lm(gpa ~ act, data=gpa)
+
+coef(fit)
+
+summary(fit)
+
+require(ggplot2)
+
+ggplot(data = gpa, aes(x=act,y=gpa))+
+  geom_point()+
+  geom_function(fun = function(x) coef(fit)[1] + coef(fit)[2]*x)+
+  theme_bw()
+
+predict(fit)
+
+resid(fit)
+
+mean(resid(fit))
+
+var(resid(fit))
+
+sd(resid(fit))
+
+predict(fit,
+        newdata = data.frame(act = 30))
+
+```
+
+### 1.20
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+copier <- read.table(here('data/CH01PR20.txt'),
+                  header=FALSE,
+                  col.names = c('y','x'))
+
+fit <- lm(y ~ x, data=copier)
+
+coef(fit)
+
+summary(fit)
+
+ggplot(data = copier, aes(x=x,y=y))+
+  geom_point()+
+  geom_function(fun = function(x) coef(fit)[1] + coef(fit)[2]*x)+
+  theme_bw()
+
+predict(fit)
+
+resid(fit)
+
+
+mean(resid(fit))
+
+var(resid(fit))
+
+sd(resid(fit))
+
+
+predict(fit,
+        newdata = data.frame(x = 5))
+
+```
+
+### 1.21
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+freight <- read.table(here('data/CH01PR21.txt'),
+                  header=FALSE,
+                  col.names = c('y','x'))
+
+fit <- lm(y ~ x, data=freight)
+
+coef(fit)
+
+summary(fit)
+
+ggplot(data = freight, aes(x=x,y=y))+
+  geom_point()+
+  geom_function(fun = function(x) coef(fit)[1] + coef(fit)[2]*x)+
+  theme_bw()
+
+predict(fit)
+
+resid(fit)
+
+
+mean(resid(fit))
+
+var(resid(fit))
+
+sd(resid(fit))
+
+
+predict(fit,
+        newdata = data.frame(x = 1))
+
+```
+
+
+### 1.22
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+hardness <- read.table(here('data/CH01PR22.txt'),
+                  header=FALSE,
+                  col.names = c('y','x'))
+
+fit <- lm(y ~ x, data=hardness)
+
+coef(fit)
+
+summary(fit)
+
+ggplot(data = hardness, aes(x=x,y=y))+
+  geom_point()+
+  geom_function(fun = function(x) coef(fit)[1] + coef(fit)[2]*x)+
+  theme_bw()
+
+predict(fit)
+
+resid(fit)
+
+
+mean(resid(fit))
+
+var(resid(fit))
+
+sd(resid(fit))
+
+
+predict(fit,
+        newdata = data.frame(x = 40))
+
+```
+
+### 1.23
+
+Refer to 1.19
+
+### 1.24
+
+Refer to 1.20
+
+### 1.25
+
+Refer to 1.21
+
+### 1.26
+
+Refer to 1.12
+
+### 1.27
+
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+muscle <- read.table(here('data/CH01PR27.txt'),
+                  header=FALSE,
+                  col.names = c('y','x'))
+
+fit <- lm(y ~ x, data=muscle)
+
+coef(fit)
+
+summary(fit)
+
+ggplot(data = muscle, aes(x=x,y=y))+
+  geom_point()+
+  geom_function(fun = function(x) coef(fit)[1] + coef(fit)[2]*x)+
+  theme_bw()
+
+predict(fit)
+
+resid(fit)
+
+
+mean(resid(fit))
+
+var(resid(fit))
+
+sd(resid(fit))
+
+
+predict(fit,
+        newdata = data.frame(x = 40))
+
+```
+
+
+### 1.28
+
+
+```{r, fig.align='center', fig.height=7,fig.width=7,message=FALSE,warning=FALSE,comment=""}
+
+crime <- read.table(here('data/CH01PR28.txt'),
+                  header=FALSE,
+                  col.names = c('crime','edu'))
+
+fit <- lm(crime ~ edu, data=crime)
+
+coef(fit)
+
+summary(fit)
+
+ggplot(data = crime, aes(x=edu,y=crime))+
+  geom_point()+
+  geom_function(fun = function(x) coef(fit)[1] + coef(fit)[2]*x)+
+  theme_bw()
+
+predict(fit)
+
+resid(fit)
+
+
+mean(resid(fit))
+
+var(resid(fit))
+
+sd(resid(fit))
+
+
+predict(fit,
+        newdata = data.frame(edu = 80))
+
+```
+
+## Exercises
 
 
 
